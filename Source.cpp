@@ -12,7 +12,7 @@ HPALETTE hPalette;
 
 
 void
-init(void)
+initGL(void)
 {
 	/* set viewing projection */
 	glMatrixMode(GL_PROJECTION);
@@ -29,6 +29,20 @@ init(void)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+}
+
+
+void
+initShaders(void)
+{
+
+}
+
+
+void 
+initBuffers(void)
+{
+
 }
 
 
@@ -183,7 +197,9 @@ WndProc(
 		setupPalette(hDC);
 		hGLRC = wglCreateContext(hDC);
 		wglMakeCurrent(hDC, hGLRC);
-		init();
+		initGL();
+		initShaders();
+		initBuffers();
 		return 0;
 	case WM_DESTROY:
 		/* finish OpenGL rendering */
