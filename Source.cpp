@@ -10,6 +10,7 @@ HDC hDC;
 HGLRC hGLRC;
 HPALETTE hPalette;
 
+
 void
 init(void)
 {
@@ -29,6 +30,7 @@ init(void)
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 }
+
 
 void
 redraw(void)
@@ -66,12 +68,14 @@ redraw(void)
 	SwapBuffers(hDC);
 }
 
+
 void
 resize(void)
 {
 	/* set viewport to cover the window */
 	glViewport(0, 0, winWidth, winHeight);
 }
+
 
 void
 setupPixelFormat(HDC hDC)
@@ -111,6 +115,7 @@ setupPixelFormat(HDC hDC)
 		exit(1);
 	}
 }
+
 
 void
 setupPalette(HDC hDC)
@@ -161,12 +166,14 @@ setupPalette(HDC hDC)
 	}
 }
 
+
 LRESULT APIENTRY
 WndProc(
-HWND hWnd,
-UINT message,
-WPARAM wParam,
-LPARAM lParam)
+	HWND hWnd,
+	UINT message,
+	WPARAM wParam,
+	LPARAM lParam
+)
 {
 	switch (message) {
 	case WM_CREATE:
@@ -245,12 +252,14 @@ LPARAM lParam)
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+
 int APIENTRY
 WinMain(
-HINSTANCE hCurrentInst,
-HINSTANCE hPreviousInst,
-LPSTR lpszCmdLine,
-int nCmdShow)
+	HINSTANCE hCurrentInst,
+	HINSTANCE hPreviousInst,
+	LPSTR lpszCmdLine,
+	int nCmdShow
+)
 {
 	WNDCLASS wndClass;
 	HWND hWnd;
