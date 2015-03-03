@@ -41,9 +41,9 @@ void init_shaders()
 {
 	const char* vertex_shader =
 		"#version 400\n"
-		"in vec3 vp;"
+		"in vec3 aVertexPosition;"
 		"void main() {"
-		"  gl_Position = vec4(vp, 1.0);"
+		"  gl_Position = vec4(aVertexPosition, 1.0);"
 		"}";
 	const char* fragment_shader =
 		"#version 400\n"
@@ -67,7 +67,7 @@ void init_shaders()
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	shader_program.vertex_position_attribute = glGetAttribLocation(
-		shader_program.program, "vp"
+		shader_program.program, "aVertexPosition"
 	);
 	glEnableVertexAttribArray(shader_program.vertex_position_attribute);
 }
