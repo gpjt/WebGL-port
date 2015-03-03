@@ -6,6 +6,9 @@
 #include <GLFW/glfw3.h>
 
 
+
+
+
 int main()
 {
 	if (!glfwInit())
@@ -65,9 +68,8 @@ int main()
 		"}";
 	const char* fragment_shader =
 		"#version 400\n"
-		"out vec4 frag_color;"
 		"void main() {"
-		"  frag_color = vec4(0.5, 0.0, 0.5, 1.0);"
+		"  gl_FragColor = vec4(0.5, 0.0, 0.5, 1.0);"
 		"}";
 
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
