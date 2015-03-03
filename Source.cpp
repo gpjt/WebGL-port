@@ -1,314 +1,98 @@
-#include <windows.h>
-#include <GL/gl.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-char *className = "OpenGL";
-char *windowName = "OpenGL Cube";
-int winX = 0, winY = 0;
-int winWidth = 300, winHeight = 300;
-
-HDC hDC;
-HGLRC hGLRC;
-HPALETTE hPalette;
+#define GLEW_STATIC
+#include <gl/glew.h>
+#include <GLFW/glfw3.h>
 
 
-void
-initGL(void)
+int main()
 {
-	/* set viewing projection */
-	glMatrixMode(GL_PROJECTION);
-	glFrustum(-0.5F, 0.5F, -0.5F, 0.5F, 1.0F, 3.0F);
+	if (!glfwInit())
+	{
+		fprintf(stderr, "ERROR: Could not start GLFW3\n");
+		exit(1);
+	}
 
-	/* position viewer */
-	glMatrixMode(GL_MODELVIEW);
-	glTranslatef(0.0F, 0.0F, -2.0F);
+	GLFWwindow* window = glfwCreateWindow(640, 480, "Extended GL init", NULL, NULL);
+	if (!window)
+	{
+		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
+		glfwTerminate();
+		return 1;
+	}
 
-	/* position object */
-	glRotatef(30.0F, 1.0F, 0.0F, 0.0F);
-	glRotatef(30.0F, 0.0F, 1.0F, 0.0F);
+	glfwMakeContextCurrent(window);
 
+	// Start GLEW extension handler
+	glewExperimental = GLU_TRUE;
+	glewInit();
+
+	// Get version info
+	const GLubyte* renderer = glGetString(GL_RENDERER);
+	const GLubyte* version = glGetString(GL_VERSION);
+	printf("Renderer: %s\n", renderer);
+	printf("OpenGL version supported %s\n", version);
+
+	// tell GL to only draw a pixel if it's closer to the viewer than
+	// whatever is currently there
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-}
+	glDepthFunc(GL_LESS);
 
-
-void
-initShaders(void)
-{
-
-}
-
-
-void 
-initBuffers(void)
-{
-
-}
-
-
-void
-redraw(void)
-{
-	/* clear color and depth buffers */
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	/* draw six faces of a cube */
-	glBegin(GL_QUADS);
-	glNormal3f(0.0F, 0.0F, 1.0F);
-	glVertex3f(0.5F, 0.5F, 0.5F); glVertex3f(-0.5F, 0.5F, 0.5F);
-	glVertex3f(-0.5F, -0.5F, 0.5F); glVertex3f(0.5F, -0.5F, 0.5F);
-
-	glNormal3f(0.0F, 0.0F, -1.0F);
-	glVertex3f(-0.5F, -0.5F, -0.5F); glVertex3f(-0.5F, 0.5F, -0.5F);
-	glVertex3f(0.5F, 0.5F, -0.5F); glVertex3f(0.5F, -0.5F, -0.5F);
-
-	glNormal3f(0.0F, 1.0F, 0.0F);
-	glVertex3f(0.5F, 0.5F, 0.5F); glVertex3f(0.5F, 0.5F, -0.5F);
-	glVertex3f(-0.5F, 0.5F, -0.5F); glVertex3f(-0.5F, 0.5F, 0.5F);
-
-	glNormal3f(0.0F, -1.0F, 0.0F);
-	glVertex3f(-0.5F, -0.5F, -0.5F); glVertex3f(0.5F, -0.5F, -0.5F);
-	glVertex3f(0.5F, -0.5F, 0.5F); glVertex3f(-0.5F, -0.5F, 0.5F);
-
-	glNormal3f(1.0F, 0.0F, 0.0F);
-	glVertex3f(0.5F, 0.5F, 0.5F); glVertex3f(0.5F, -0.5F, 0.5F);
-	glVertex3f(0.5F, -0.5F, -0.5F); glVertex3f(0.5F, 0.5F, -0.5F);
-
-	glNormal3f(-1.0F, 0.0F, 0.0F);
-	glVertex3f(-0.5F, -0.5F, -0.5F); glVertex3f(-0.5F, -0.5F, 0.5F);
-	glVertex3f(-0.5F, 0.5F, 0.5F); glVertex3f(-0.5F, 0.5F, -0.5F);
-	glEnd();
-
-	SwapBuffers(hDC);
-}
-
-
-void
-resize(void)
-{
-	/* set viewport to cover the window */
-	glViewport(0, 0, winWidth, winHeight);
-}
-
-
-void
-setupPixelFormat(HDC hDC)
-{
-	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),  /* size */
-		1,                              /* version */
-		PFD_SUPPORT_OPENGL |
-		PFD_DRAW_TO_WINDOW |
-		PFD_DOUBLEBUFFER,               /* support double-buffering */
-		PFD_TYPE_RGBA,                  /* color type */
-		16,                             /* prefered color depth */
-		0, 0, 0, 0, 0, 0,               /* color bits (ignored) */
-		0,                              /* no alpha buffer */
-		0,                              /* alpha bits (ignored) */
-		0,                              /* no accumulation buffer */
-		0, 0, 0, 0,                     /* accum bits (ignored) */
-		16,                             /* depth buffer */
-		0,                              /* no stencil buffer */
-		0,                              /* no auxiliary buffers */
-		PFD_MAIN_PLANE,                 /* main layer */
-		0,                              /* reserved */
-		0, 0, 0,                        /* no layer, visible, damage masks */
+	float points[] = {
+		0.0f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f
 	};
-	int pixelFormat;
 
-	pixelFormat = ChoosePixelFormat(hDC, &pfd);
-	if (pixelFormat == 0) {
-		MessageBox(WindowFromDC(hDC), "ChoosePixelFormat failed.", "Error",
-			MB_ICONERROR | MB_OK);
-		exit(1);
-	}
+	GLuint vbo = 0;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), points, GL_STATIC_DRAW);
 
-	if (SetPixelFormat(hDC, pixelFormat, &pfd) != TRUE) {
-		MessageBox(WindowFromDC(hDC), "SetPixelFormat failed.", "Error",
-			MB_ICONERROR | MB_OK);
-		exit(1);
-	}
-}
+	GLuint vao = 0;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+	const char* vertex_shader =
+		"#version 400\n"
+		"in vec3 vp;"
+		"void main() {"
+		"  gl_Position = vec4(vp, 1.0);"
+		"}";
+	const char* fragment_shader =
+		"#version 400\n"
+		"out vec4 frag_color;"
+		"void main() {"
+		"  frag_color = vec4(0.5, 0.0, 0.5, 1.0);"
+		"}";
 
-void
-setupPalette(HDC hDC)
-{
-	int pixelFormat = GetPixelFormat(hDC);
-	PIXELFORMATDESCRIPTOR pfd;
-	LOGPALETTE* pPal;
-	int paletteSize;
+	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vs, 1, &vertex_shader, NULL);
+	glCompileShader(vs);
+	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fs, 1, &fragment_shader, NULL);
+	glCompileShader(fs);
 
-	DescribePixelFormat(hDC, pixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+	GLuint shader_program = glCreateProgram();
+	glAttachShader(shader_program, fs);
+	glAttachShader(shader_program, vs);
+	glLinkProgram(shader_program);
 
-	if (pfd.dwFlags & PFD_NEED_PALETTE) {
-		paletteSize = 1 << pfd.cColorBits;
-	}
-	else {
-		return;
-	}
-
-	pPal = (LOGPALETTE*)
-		malloc(sizeof(LOGPALETTE) + paletteSize * sizeof(PALETTEENTRY));
-	pPal->palVersion = 0x300;
-	pPal->palNumEntries = paletteSize;
-
-	/* build a simple RGB color palette */
+	while (!glfwWindowShouldClose(window))
 	{
-		int redMask = (1 << pfd.cRedBits) - 1;
-		int greenMask = (1 << pfd.cGreenBits) - 1;
-		int blueMask = (1 << pfd.cBlueBits) - 1;
-		int i;
-
-		for (i = 0; i<paletteSize; ++i) {
-			pPal->palPalEntry[i].peRed =
-				(((i >> pfd.cRedShift) & redMask) * 255) / redMask;
-			pPal->palPalEntry[i].peGreen =
-				(((i >> pfd.cGreenShift) & greenMask) * 255) / greenMask;
-			pPal->palPalEntry[i].peBlue =
-				(((i >> pfd.cBlueShift) & blueMask) * 255) / blueMask;
-			pPal->palPalEntry[i].peFlags = 0;
-		}
+		// Clear the window
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(shader_program);
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glfwPollEvents();
+		glfwSwapBuffers(window);
 	}
 
-	hPalette = CreatePalette(pPal);
-	free(pPal);
-
-	if (hPalette) {
-		SelectPalette(hDC, hPalette, FALSE);
-		RealizePalette(hDC);
-	}
-}
-
-
-LRESULT APIENTRY
-WndProc(
-	HWND hWnd,
-	UINT message,
-	WPARAM wParam,
-	LPARAM lParam
-)
-{
-	switch (message) {
-	case WM_CREATE:
-		/* initialize OpenGL rendering */
-		hDC = GetDC(hWnd);
-		setupPixelFormat(hDC);
-		setupPalette(hDC);
-		hGLRC = wglCreateContext(hDC);
-		wglMakeCurrent(hDC, hGLRC);
-		initGL();
-		initShaders();
-		initBuffers();
-		return 0;
-	case WM_DESTROY:
-		/* finish OpenGL rendering */
-		if (hGLRC) {
-			wglMakeCurrent(NULL, NULL);
-			wglDeleteContext(hGLRC);
-		}
-		if (hPalette) {
-			DeleteObject(hPalette);
-		}
-		ReleaseDC(hWnd, hDC);
-		PostQuitMessage(0);
-		return 0;
-	case WM_SIZE:
-		/* track window size changes */
-		if (hGLRC) {
-			winWidth = (int)LOWORD(lParam);
-			winHeight = (int)HIWORD(lParam);
-			resize();
-			return 0;
-		}
-	case WM_PALETTECHANGED:
-		/* realize palette if this is *not* the current window */
-		if (hGLRC && hPalette && (HWND)wParam != hWnd) {
-			UnrealizeObject(hPalette);
-			SelectPalette(hDC, hPalette, FALSE);
-			RealizePalette(hDC);
-			redraw();
-			break;
-		}
-		break;
-	case WM_QUERYNEWPALETTE:
-		/* realize palette if this is the current window */
-		if (hGLRC && hPalette) {
-			UnrealizeObject(hPalette);
-			SelectPalette(hDC, hPalette, FALSE);
-			RealizePalette(hDC);
-			redraw();
-			return TRUE;
-		}
-		break;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		BeginPaint(hWnd, &ps);
-		if (hGLRC) {
-			redraw();
-		}
-		EndPaint(hWnd, &ps);
-		return 0;
-	}
-	break;
-	case WM_CHAR:
-		/* handle keyboard input */
-		switch ((int)wParam) {
-		case VK_ESCAPE:
-			DestroyWindow(hWnd);
-			return 0;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-
-
-int APIENTRY
-WinMain(
-	HINSTANCE hCurrentInst,
-	HINSTANCE hPreviousInst,
-	LPSTR lpszCmdLine,
-	int nCmdShow
-)
-{
-	WNDCLASS wndClass;
-	HWND hWnd;
-	MSG msg;
-
-	/* register window class */
-	wndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-	wndClass.lpfnWndProc = WndProc;
-	wndClass.cbClsExtra = 0;
-	wndClass.cbWndExtra = 0;
-	wndClass.hInstance = hCurrentInst;
-	wndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wndClass.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
-	wndClass.lpszMenuName = NULL;
-	wndClass.lpszClassName = className;
-	RegisterClass(&wndClass);
-
-	/* create window */
-	hWnd = CreateWindow(
-		className, windowName,
-		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-		winX, winY, winWidth, winHeight,
-		NULL, NULL, hCurrentInst, NULL);
-
-	/* display window */
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
-
-	/* process messages */
-	while (GetMessage(&msg, NULL, 0, 0) == TRUE) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-	return msg.wParam;
+	glfwTerminate();
+	return 0;
 }
