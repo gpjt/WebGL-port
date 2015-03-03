@@ -31,8 +31,11 @@ GLFWwindow* init_gl()
 }
 
 
-GLuint shader_program;
-GLint vertex_position_attribute;
+struct shader_program_details {
+	GLuint program;
+	GLint vertex_position_attribute;
+};
+struct shader_program_details shader_program;
 
 void init_shaders()
 {
@@ -55,16 +58,18 @@ void init_shaders()
 	glShaderSource(fs, 1, &fragment_shader, NULL);
 	glCompileShader(fs);
 
-	shader_program = glCreateProgram();
-	glAttachShader(shader_program, fs);
-	glAttachShader(shader_program, vs);
-	glLinkProgram(shader_program);
+	shader_program.program = glCreateProgram();
+	glAttachShader(shader_program.program, fs);
+	glAttachShader(shader_program.program, vs);
+	glLinkProgram(shader_program.program);
 
 	GLuint vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	vertex_position_attribute = glGetAttribLocation(shader_program, "vp");
-	glEnableVertexAttribArray(vertex_position_attribute);
+	shader_program.vertex_position_attribute = glGetAttribLocation(
+		shader_program.program, "vp"
+	);
+	glEnableVertexAttribArray(shader_program.vertex_position_attribute);
 }
 
 
@@ -97,11 +102,11 @@ void draw_scene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(shader_program);
+	glUseProgram(shader_program.program);
 
 	glBindBuffer(GL_ARRAY_BUFFER, triangle_vertex_buffer.buffer);
 	glVertexAttribPointer(
-		vertex_position_attribute, triangle_vertex_buffer.item_size, 
+		shader_program.vertex_position_attribute, triangle_vertex_buffer.item_size, 
 		GL_FLOAT, GL_FALSE, 0, NULL
 	);
 	glDrawArrays(GL_TRIANGLES, 0, triangle_vertex_buffer.num_items);
