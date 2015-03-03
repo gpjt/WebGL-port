@@ -7,9 +7,7 @@
 
 
 
-
-
-int main()
+GLFWwindow* init_gl()
 {
 	if (!glfwInit())
 	{
@@ -22,7 +20,7 @@ int main()
 	{
 		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
 		glfwTerminate();
-		return 1;
+		exit(1);
 	}
 
 	glfwMakeContextCurrent(window);
@@ -37,22 +35,15 @@ int main()
 	printf("Renderer: %s\n", renderer);
 	printf("OpenGL version supported %s\n", version);
 
-	// tell GL to only draw a pixel if it's closer to the viewer than
-	// whatever is currently there
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+	return window;
+}
 
-	float points[] = {
-		0.0f, 0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f
-	};
 
-	GLuint vbo = 0;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), points, GL_STATIC_DRAW);
+GLuint shader_program;
+GLint vertex_position_attribute;
 
+void init_shaders()
+{
 	const char* vertex_shader =
 		"#version 400\n"
 		"in vec3 vp;"
@@ -72,7 +63,7 @@ int main()
 	glShaderSource(fs, 1, &fragment_shader, NULL);
 	glCompileShader(fs);
 
-	GLuint shader_program = glCreateProgram();
+	shader_program = glCreateProgram();
 	glAttachShader(shader_program, fs);
 	glAttachShader(shader_program, vs);
 	glLinkProgram(shader_program);
@@ -80,19 +71,53 @@ int main()
 	GLuint vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	GLint vertex_position_attribute = glGetAttribLocation(shader_program, "vp");
+	vertex_position_attribute = glGetAttribLocation(shader_program, "vp");
 	glEnableVertexAttribArray(vertex_position_attribute);
+}
+
+
+GLuint vbo;
+
+void init_buffers()
+{
+	float points[] = {
+		0.0f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f
+	};
+
+	vbo = 0;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), points, GL_STATIC_DRAW);
+}
+
+
+void draw_scene()
+{
+	// Clear the window
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glUseProgram(shader_program);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(vertex_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+
+int main()
+{
+	GLFWwindow* window = init_gl();
+	init_shaders();
+	init_buffers();
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window))
 	{
-		// Clear the window
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUseProgram(shader_program);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glVertexAttribPointer(vertex_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		draw_scene();
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
