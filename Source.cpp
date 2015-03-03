@@ -25,15 +25,7 @@ GLFWwindow* init_gl()
 
 	glfwMakeContextCurrent(window);
 
-	// Start GLEW extension handler
-	glewExperimental = GLU_TRUE;
 	glewInit();
-
-	// Get version info
-	const GLubyte* renderer = glGetString(GL_RENDERER);
-	const GLubyte* version = glGetString(GL_VERSION);
-	printf("Renderer: %s\n", renderer);
-	printf("OpenGL version supported %s\n", version);
 
 	return window;
 }
@@ -95,7 +87,6 @@ void init_buffers()
 
 void draw_scene()
 {
-	// Clear the window
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(shader_program);
