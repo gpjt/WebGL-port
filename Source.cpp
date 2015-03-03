@@ -68,7 +68,7 @@ void init_shaders()
 }
 
 
-GLuint vbo;
+GLuint triangle_vertex_position_buffer;
 
 void init_buffers()
 {
@@ -78,9 +78,8 @@ void init_buffers()
 		-0.5f, -0.5f, 0.0f
 	};
 
-	vbo = 0;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenBuffers(1, &triangle_vertex_position_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, triangle_vertex_position_buffer);
 	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), points, GL_STATIC_DRAW);
 }
 
@@ -91,7 +90,7 @@ void draw_scene()
 
 	glUseProgram(shader_program);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, triangle_vertex_position_buffer);
 	glVertexAttribPointer(vertex_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
