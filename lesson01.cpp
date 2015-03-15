@@ -72,12 +72,12 @@ void init_shaders()
 		"uniform mat4 uPMatrix;"
 		""
 		"void main() {"
-		"  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);"
+		"    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);"
 		"}";
 	const char* fragment_shader =
 		"#version 400\n"
 		"void main() {"
-		"  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);"
+		"    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);"
 		"}";
 
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -165,13 +165,14 @@ void init_buffers()
 
 void draw_scene()
 {
+	glViewport(0, 0, viewport.width, viewport.height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(shader_program.program);
 
 	p_matrix = glm::perspective(
 		45.0f, 
-		(float)viewport.width / (float)viewport.height, 
+		(float)viewport.width / (float)viewport.height,
 		0.1f, 100.0f
 	);
 
