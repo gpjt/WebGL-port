@@ -15,6 +15,12 @@ struct viewport_details {
 };
 struct viewport_details viewport;
 
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+	viewport.width = width;
+	viewport.height = height;
+}
+
 GLFWwindow* init_gl()
 {
 	if (!glfwInit())
@@ -35,6 +41,8 @@ GLFWwindow* init_gl()
 		glfwTerminate();
 		exit(1);
 	}
+
+	glfwSetWindowSizeCallback(window, window_size_callback);
 
 	glfwMakeContextCurrent(window);
 
