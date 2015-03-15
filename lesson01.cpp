@@ -9,6 +9,12 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
+struct viewport_details {
+	int width;
+	int height;
+};
+struct viewport_details viewport;
+
 GLFWwindow* init_gl()
 {
 	if (!glfwInit())
@@ -17,7 +23,12 @@ GLFWwindow* init_gl()
 		exit(1);
 	}
 
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Extended GL init", NULL, NULL);
+	viewport.width = 640;
+	viewport.height = 480;
+	GLFWwindow* window = glfwCreateWindow(
+		viewport.width, viewport.height, 
+		"Lesson 1", NULL, NULL
+	);
 	if (!window)
 	{
 		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
@@ -150,7 +161,11 @@ void draw_scene()
 
 	glUseProgram(shader_program.program);
 
-	p_matrix = glm::perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
+	p_matrix = glm::perspective(
+		45.0f, 
+		(float)viewport.width / (float)viewport.height, 
+		0.1f, 100.0f
+	);
 
 	mv_matrix = glm::mat4();
 
