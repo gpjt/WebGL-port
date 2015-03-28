@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// Include the OculusVR SDK 
+#include "OVR_CAPI.h"
 
 struct viewport_details {
 	int width;
@@ -50,6 +52,16 @@ GLFWwindow* init_gl()
 
 	return window;
 }
+
+
+void Initialization() {
+	ovr_Initialize();
+	ovrHmd hmd = ovrHmd_Create(0);
+	if (hmd) {
+	}
+	ovrHmd_Destroy(hmd); ovr_Shutdown();
+}
+
 
 
 struct shader_program_details {
