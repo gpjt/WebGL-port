@@ -23,7 +23,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 	viewport.height = height;
 }
 
-GLFWwindow* init_gl()
+GLFWwindow* init_main_display_gl()
 {
 	if (!glfwInit())
 	{
@@ -54,12 +54,9 @@ GLFWwindow* init_gl()
 }
 
 
-void Initialization() {
+ovrHmd init_ovr_gl() {
 	ovr_Initialize();
-	ovrHmd hmd = ovrHmd_Create(0);
-	if (hmd) {
-	}
-	ovrHmd_Destroy(hmd); ovr_Shutdown();
+	return ovrHmd_Create(0);
 }
 
 
@@ -210,9 +207,24 @@ void draw_scene()
 }
 
 
+void terminate_main_display()
+{
+	glfwTerminate();
+}
+
+
+void terminate_ovr(ovrHmd hmd)
+{
+	ovrHmd_Destroy(hmd);
+	ovr_Shutdown();
+}
+
+
 int main()
 {
-	GLFWwindow* window = init_gl();
+	GLFWwindow* window = init_main_display_gl();
+	ovrHmd hmd = init_ovr_gl();
+
 	init_shaders();
 	init_buffers();
 
@@ -227,6 +239,9 @@ int main()
 		glfwSwapBuffers(window);
 	}
 
-	glfwTerminate();
+	terminate_main_display();
+	if (hmd) {
+		terminate_ovr(hmd);
+	}
 	return 0;
 }
