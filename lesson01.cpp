@@ -56,7 +56,11 @@ GLFWwindow* init_main_display_gl()
 
 ovrHmd init_ovr_gl() {
 	ovr_Initialize();
-	return ovrHmd_Create(0);
+	ovrHmd hmd = ovrHmd_Create(0);
+
+	ovrHmd_ConfigureTracking(hmd, ovrTrackingCap_Orientation | ovrTrackingCap_MagYawCorrection | ovrTrackingCap_Position, 0);
+
+	return hmd;
 }
 
 
